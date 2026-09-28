@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Nemo!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { 
+            background: linear-gradient(135deg, #FF9AA2, #A2E1DB);
+            height: 100vh; display: flex; justify-content: center; align-items: center; 
+            overflow: hidden;
+        }
+        .card { 
+            width: 380px; height: 600px; background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 40px; position: relative; padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center;
+            overflow: hidden; transition: background 0.5s ease;
+            background-size: cover; background-position: center;
+        }
+        .page { 
+            position: absolute; width: 100%; height: 100%; display: none; 
+            flex-direction: column; align-items: center; padding: 20px;
+            transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .page.active { display: flex; transform: translateX(0); }
+        .page.slide-out { display: flex; transform: translateX(-100%); }
+        h1 { font-size: 1.4rem; text-transform: uppercase; margin-bottom: 10px; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); text-align: center; }
+        
+        .title-red { color: #E63946; font-family: Impact, sans-serif; font-size: 1.2rem; text-transform: uppercase; margin-bottom: 10px; }
+        .body-text { color: white; font-size: 0.95rem; line-height: 1.5; text-align: left; width: 100%; }
+        .dark-bold { font-weight: 800; color: #000; margin: 10px 0; }
+        
+        .controls { position: absolute; bottom: 30px; width: 100%; padding: 0 30px; display: flex; justify-content: space-between; align-items: center; }
+        .btn { padding: 10px 20px; background: rgba(255,255,255,0.3); border: none; border-radius: 20px; color: white; cursor: pointer; font-weight: bold; }
+        .end-btn { padding: 10px 25px; background-color: #E56B6F; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+
+        .balloon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .balloon { width: 80px; height: 90px; border-radius: 50% / 40%; cursor: pointer; display: flex; justify-content: center; align-items: center; border: 1px solid rgba(255,255,255,0.8); font-size: 0.7rem; font-weight: bold; color: white; background: rgba(255,255,255,0.3); }
+        .popped { border-style: dashed; cursor: default; }
+        
+        .chalk-container { width: 100%; height: 250px; background: rgba(0,0,0,0.4); border-radius: 20px; position: relative; overflow: hidden; margin-top: 10px; }
+        .chalk-word { position: absolute; font-family: 'Caveat Brush', cursive; font-size: 1.8rem; color: #fff; width: 100%; text-align: center; opacity: 0; }
+        
+        .photo-area { position: relative; width: 320px; height: 350px; margin-top: 40px; display: flex; justify-content: center; align-items: center; }
+        .photo { position: absolute; width: 150px; height: 150px; background: white; cursor: pointer; border-radius: 12px; transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 3px 3px 15px rgba(0,0,0,0.25); background-size: cover; background-position: center; }
+        .p1 { transform: rotate(-8deg); z-index: 4; }
+        .p2 { transform: rotate(5deg); z-index: 3; }
+        .p3 { transform: rotate(-5deg); z-index: 2; }
+        .p4 { transform: rotate(8deg); z-index: 1; }
+        .exit-right { transform: translateX(300px) rotate(45deg); opacity: 0; }
+        .matrix .p1 { top: 0px; left: 0px; transform: rotate(0deg); }
+        .matrix .p2 { top: 0px; left: 170px; transform: rotate(0deg); }
+        .matrix .p3 { top: 200px; left: 0px; transform: rotate(0deg); }
+        .matrix .p4 { top: 200px; left: 170px; transform: rotate(0deg); }
+
+        #birthdayText { position: absolute; top: 175px; left: 50%; transform: translate(-50%, -50%); width: 220px; text-align: center; font-family: 'Caveat Brush', cursive; color: #fff; opacity: 0; transition: opacity 0.5s; pointer-events: none; z-index: 10; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 15px; }
+        @keyframes climbUp { 0% { transform: translateY(200px); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translateY(-50px); opacity: 0; } }
+        
+        .final-center { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: white; font-family: 'Caveat Brush', cursive; font-size: 2.5rem; text-align: center; line-height: 1.2; }
+        .pop-text { animation: popScale 0.8s ease-out forwards; opacity: 0; }
+        @keyframes popScale { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<audio id="bgMusic" src="AUDIO2.MPEG" loop></audio>
+
+<div class="card" id="phoneCard">
+    <div class="page active" id="page0"><h1>OPEN IT NEMO</h1><div style="font-size: 4rem; margin-top: 50px;">🥸❤️🤓</div></div>
+    
+    <div class="page" id="page1">
+        <h1>YOUR TRAITS</h1>
+        <div class="balloon-grid">
+            <div class="balloon" onclick="pop(this, '🫂LOYAL🫂', 'images/loyal.jpeg')" style="background: rgba(168, 221, 222, 0.6);"></div>
+            <div class="balloon" onclick="pop(this, '🦸‍♀️BRAVE🦸‍♀️', 'images/brave.jpeg')" style="background: rgba(167, 201, 87, 0.6);"></div>
+            <div class="balloon" onclick="pop(this, '🤗MITSURI🤗', 'images/mitsuri.jpeg')" style="background: rgba(200, 182, 255, 0.6);"></div>
+            <div class="balloon" onclick="pop(this, '🤌CUTE🤌', 'images/cute.jpeg')" style="background: rgba(255, 183, 3, 0.6);"></div>
+        </div>
+    </div>
+    
+    <div class="page" id="page2"><h1>A SPECIAL MESSAGE</h1><div class="chalk-container" id="chalkBoard"></div></div>
+    
+    <div class="page" id="page3">
+        <h1>SPECIAL...</h1>
+        <div class="balloon-grid">
+            <div class="balloon" onclick="pop(this, '✨INTROVERT✨', 'images/introvert.jpeg')" style="background: rgba(255, 107, 107, 0.6);"></div>
+            <div class="balloon" onclick="pop(this, '✨URANOPHILE✨', 'images/uranophile.jpeg')" style="background: rgba(107, 203, 119, 0.6);"></div>
+            <div class="balloon" onclick="pop(this, '✨ZOOPHILIST✨', 'images/zoophilist.jpeg')" style="background: rgba(77, 150, 255, 0.6);"></div>
+            <div class="balloon" onclick="pop(this, '✨OVERTHINKER✨', 'images/overthinker.jpeg')" style="background: rgba(199, 125, 255, 0.6);"></div>
+        </div>
+    </div>
+    
+    <div class="page" id="page4">
+        <h1>HAPPY BIRTHDAY SISTER!!!</h1>
+        <div class="photo-area" id="photoArea">
+            <div class="photo p1" onclick="dismiss(this)" style="background-image: url('images/nemo1.jpeg');"></div>
+            <div class="photo p2" onclick="dismiss(this)" style="background-image: url('images/nemo2.jpeg');"></div>
+            <div class="photo p3" onclick="dismiss(this)" style="background-image: url('images/nemo3.jpeg');"></div>
+            <div class="photo p4" onclick="finalTrigger(this)" style="background-image: url('images/nemo4.jpeg');"></div>
+            <div id="birthdayText">
+                <div style="font-size: 0.8rem; margin-bottom: 2px;">HAPPY BIRTHDAY</div>
+                <div style="font-size: 1.1rem; font-weight: bold;">NEMO!!!</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="page" id="page5">
+        <h1>DEAR NEMO(SCHWESTER)</h1>
+        <div class="title-red">HAPPY BIRTHDAY TO MY SISTER!!!</div>
+        <div class="body-text">
+            YOU ARE SWEET, LOYAL, CUTE AND BRAVE AND <br>I'M SO GRATEFUL TO HAVE YOU IN MY LIFE.<br><br>
+            YOU BRING SO MUCH WARMTH AND SWEETNESS INTO MY LIFE. <br>EVERY MOMENT WITH YOU IS PRECIOUS.<br><br>
+            ON YOUR SPECIAL DAY, I WISH YOU ALL THE<br>HAPPINESS, LOVE, AND JOY THAT YOU DESERVE. MAY<br>THIS LIFE GIVE YOU THE BEST MEMORIES.
+        </div>
+        <div class="body-text">HERE'S TO CELEBRATING YOU TODAY AND ALWAYS!!!</div>
+        <div class="body-text dark-bold">WITH LOVE AND BEST WISHES,<br>YOUR BROTHER!!!🥸</div>
+        <button class="end-btn" onclick="nextPage()">END &rarr;</button>
+    </div>
+
+    <div class="page" id="page6">
+        <div class="final-center">
+            <div class="pop-text" style="animation-delay: 0.2s;">THANK YOU</div>
+            <div class="pop-text" style="animation-delay: 0.8s;">NEMO🥸💓🤓!!!</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn" id="replayBtn" style="visibility:hidden;" onclick="startMessage()">REPLAY</button>
+        <button class="btn" id="nextBtn" onclick="nextPage()">NEXT &rarr;</button>
+    </div>
+</div>
+
+<script>
+    let currentPage = 0;
+    let audioStarted = false; 
+    let isTransitioning = false;
+    const card = document.getElementById('phoneCard');
+    const bgMusic = document.getElementById('bgMusic');
+
+    function pop(el, text, imgPath) { 
+        if(!el.classList.contains('popped')) { 
+            el.innerText = text; 
+            el.classList.add('popped'); 
+            card.style.backgroundImage = `url('${imgPath}')`;
+            card.style.backgroundColor = "rgba(0,0,0,0.4)";
+        } 
+    }
+    
+    function dismiss(el) { el.classList.add('exit-right'); }
+    
+    function finalTrigger(el) { 
+        el.classList.add('exit-right'); 
+        const area = document.getElementById('photoArea'); 
+        const photos = document.querySelectorAll('.photo');
+        setTimeout(() => { 
+            photos.forEach(p => p.classList.remove('exit-right'));
+            area.classList.add('matrix'); 
+            setTimeout(() => { document.getElementById('birthdayText').style.opacity = '1'; }, 300); 
+        }, 700); 
+    }
+    
+    function nextPage() {
+        if(currentPage >= 6 || isTransitioning) return;
+        isTransitioning = true;
+
+        if(!audioStarted) {
+            bgMusic.play().then(() => {
+                audioStarted = true;
+            }).catch(e => {
+                console.log("Audio play blocked or waiting for user interaction:", e);
+            });
+        }
+
+        const outgoingPage = document.getElementById(`page${currentPage}`);
+        outgoingPage.classList.add('slide-out');
+
+        setTimeout(() => {
+            outgoingPage.style.display = 'none';
+            outgoingPage.classList.remove('slide-out', 'active');
+            
+            currentPage++;
+            const incomingPage = document.getElementById(`page${currentPage}`);
+            incomingPage.style.display = 'flex';
+            void incomingPage.offsetWidth;
+            incomingPage.classList.add('active');
+            
+            if(currentPage === 6) {
+                bgMusic.pause();
+                bgMusic.currentTime = 0;
+            }
+            
+            card.style.backgroundImage = 'none';
+            card.style.backgroundColor = "rgba(255, 255, 255, 0.3)";
+            
+            document.getElementById('nextBtn').style.display = (currentPage >= 5) ? 'none' : 'block';
+            document.getElementById('replayBtn').style.visibility = (currentPage === 2) ? 'visible' : 'hidden';
+            if(currentPage === 2) startMessage();
+
+            setTimeout(() => {
+                isTransitioning = false;
+            }, 800);
+        }, 800);
+    }
+    
+    function startMessage() { 
+        const board = document.getElementById('chalkBoard'); 
+        board.innerHTML = ""; 
+        const msg = "I don't know how you will take this but this is the time to break the truth that   I AM SPIDER-MAN 🕸️";
+        msg.split(" ").forEach((w, i) => { 
+            const el = document.createElement('div'); 
+            el.className = 'chalk-word'; 
+            el.innerText = w;  
+            el.style.animation = "climbUp 6s linear forwards"; 
+            el.style.animationDelay = (i * 0.8) + "s"; 
+            board.appendChild(el); 
+        }); 
+    }
+</script>
+</body>
+</html>
